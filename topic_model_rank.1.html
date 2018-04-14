@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="echarts.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+</head>
+
+<body>
+    <div id="selection">
+        <div>Choose a topic:</div>
+    </div>
+    <div id="main" style="width: 800px;height:400px;"></div>
+
+    <script type="text/javascript">
+        var myChart = echarts.init(document.getElementById('main'));
+
+        var colors = ["balck", "#ffcce1", "#6ab4ed", "#f484ab", "#ff9b7a", "#97f287"]
+
+        var years = []
+
+        for (var x = 0; x < 10; x++) {
+            years.push(1990 + x)
+        }
+
+        $.get('topicModel.json').done(function(topicModelData) {
+            
+            $.get('topicModelRank.json').done(function(data) {
+
+            var topicNames = []
+
+            for (var topic in data) {
+                topicNames.push(topic)
+
+            }
+
+            topicNames.map(function(topic) {
+                var topicButton = $("<button></button>");
+                topicButton.text(topic);
+                topicButton.css({
+                    "margin": "5px", 
+                    "padding": "5px", 
+                    "background": "white",
+                    "border": "1px solid grey"
+                    });
+                topicButton.on("click", showChart.bind(this, data[topic], topicModelData[topic], topic))
+                $("#selection").append(topicButton);
+            });
+            });
+        })
+
+
+
+        function showChart(data, topicModelData, topic) {
+            var keywords = []
+            var series = []
+
+            var keywordCount = 1;
+            for (var keyword in data) {
+                series.push({
+                    name: keyword,
+                    type: "line",
+                    symbol: "circle",
+                    lineStyle: {
+                        width: 3
+                    },
+                    symbolSize: function (val, params) {
+                        // return topicModelData[keyword][params.dataIndex] * topicModelData[keyword][params.dataIndex] * 1000000;
+                        // return topicModelData[keyword] * 3000;
+                        return [topicModelData[keyword][params.dataIndex] * 4000, topicModelData[keyword][params.dataIndex] * 4000]
+                    },
+                    label: {
+                        show: true,
+                        position: "right",
+                        fontSize: 15,
+                        offset: [10, 0],
+                        formatter: function(params) {
+                            return params.dataIndex == years.length - 1 ? series[params.seriesIndex].name : "";
+                        }
+                    },
+                    data: data[keyword]
+                });
+
+                keywordCount ++;
+            }
+
+            myChart.setOption({
+                title: {
+                    left: 'center',
+                    text: 'Keyword Rank in Topic ' + topic 
+                },
+                legend: {
+                    data: keywords,
+                    orient: "horizontal",
+                    right: "center",
+                    top: "10%",
+                    inactiveColor: "grey",
+                    selectedMode: "single"
+                },
+                grid: {
+                    y: "25%",
+                    x2: "20%"
+                },
+                tooltip: {
+                    formatter: function(params, callback) {
+                        console.log(params)
+                        return "Keyword: " + params.seriesName + "<br>" +
+                                "Year: " + params.name + "<br>" + 
+                                "Rank: " + (parseInt(params.data) + 1)
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    data: years, 
+                    axisLabel: {
+                        margin: 20
+                    }
+                },
+                yAxis: {
+                    name: 'Rank',
+                    type: 'value',
+                    inverse: true
+                },
+                // series: series
+                series: series
+            })
+
+            
+        }
+
+
+        // $.get('topicModelRank.json').done(function(data) {
+
+        //     var topicNames = []
+        //     var keywords = []
+
+        //     var series = []
+        //     for (var topic in data) {
+        //         topicNames.push(topic)
+        //         var keywordCount = 1;
+        //         for (var keyword in data[topic]) {
+        //             series.push({
+        //                 name: topic,
+        //                 keyword: keyword,
+        //                 type: "line",
+        //                 symbol: "circle",
+        //                 symbolSize: 15,
+        //                 lineStyle: {
+        //                     width: 3,
+        //                     color: colors[keywordCount]
+        //                 },
+        //                 itemStyle: {
+        //                     color: colors[keywordCount]
+        //                 },
+        //                 label: {
+        //                     show: true,
+        //                     position: "right",
+        //                     fontSize: 15,
+        //                     offset: [10, 0],
+        //                     formatter: function(params) {
+        //                         return params.dataIndex == years.length - 1 ? series[params.seriesIndex].keyword : "";
+        //                     }
+        //                 },
+        //                 data: data[topic][keyword]
+        //             });
+
+        //             keywordCount ++;
+        //         }
+        //     }
+            
+
+        //     myChart.setOption({
+        //         title: {
+        //             left: 'center',
+        //             text: 'Keyword Rank in Topic'
+        //         },
+        //         legend: {
+        //             data: topicNames,
+        //             orient: "horizontal",
+        //             right: "center",
+        //             top: "10%",
+        //             inactiveColor: "grey",
+        //             selectedMode: "single"
+        //         },
+        //         grid: {
+        //             y: "25%",
+        //             x2: "20%"
+        //         },
+        //         tooltip: {
+        //             formatter: function(params, callback) {
+        //                 console.log(params)
+        //                 return "Keyword: " + params.seriesName + "<br>" +
+        //                         "Year: " + params.name + "<br>" + 
+        //                         "Rank: " + (parseInt(params.data) + 1)
+        //             }
+        //         },
+        //         xAxis: {
+        //             type: 'category',
+        //             data: years
+        //         },
+        //         yAxis: {
+        //             type: 'value',
+        //             inverse: true
+        //         },
+        //         // series: series
+        //         series: series
+        //     })
+
+        // })
+    </script>
+</body>
+
+</html>
+

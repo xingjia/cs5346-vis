@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="echarts.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+</head>
+
+<body>
+    <div id="main" style="width: 1000px;height:600px;"></div>
+
+    <script type="text/javascript">
+        var myChart = echarts.init(document.getElementById('main'));
+
+        $.get('file_count.json').done(function(data) {
+
+            myChart.setOption({
+                title: {
+                    left: 'center',
+                    text: 'Number of papers at conference W over time'
+                },
+                legend: {
+                    data:['Paper count'],
+                    left: 'right',
+                    top: '25',
+                    orient: 'horizontal'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: function(params, callback) {
+                        console.log(params[0])
+                        return "Conference: " + params[0].axisValue + "<br>" + 
+                               "Number of papers: " + params[0].data
+                     }
+                },
+                xAxis: [{
+                    name: "Conference",
+                    data: data.map(x => x["name"]),
+                    type: "category",
+                    axisTick: {
+                        interval: 0
+                    },
+                    axisLabel: {
+                        interval: 0
+                    }
+                }],
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: 'Citation count',
+                        // min: 0,
+                        // max: 2000,
+                        position: 'left'
+                    }
+                ],
+                // series: series
+                series: [{
+                    name: 'Paper count',
+                    type: 'line',
+                    data: data.map(x => x["count"]),
+                    barWidth: '40px'
+                }]
+            })
+
+        })
+    </script>
+</body>
+
+</html>
+
