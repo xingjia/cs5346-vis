@@ -7,7 +7,7 @@
 </head>
 
 <body>
-    <div id="main" style="width: 600px;height:400px;"></div>
+    <div id="main" style="width: 600px;height:600px;"></div>
 
     <script type="text/javascript">
         var myChart = echarts.init(document.getElementById('main'));
@@ -82,25 +82,28 @@
                                "Citation Lag: " + citationLags[params[0].dataIndex].toFixed(2) + "years"
                      }
                 },
-                visualMap: [{
-                    show: false,
-                    type: 'continuous',
-                    seriesIndex: 1,
-                    min: 5,
-                    max: 12,
-                    inRange: {
-                        color: ['yellow', 'crimson']
-                    }
-                }],
-                xAxis: {
+                // visualMap: [{
+                //     show: false,
+                //     type: 'continuous',
+                //     seriesIndex: 1,
+                //     min: 5,
+                //     max: 12,
+                //     inRange: {
+                //         color: ['yellow', 'crimson']
+                //     }
+                // }],
+                xAxis: [{
                     data: confNames
-                },
+                },{
+                    data: confNames,
+                    position: 'top'
+                }],
                 yAxis: [
                     {
                         type: 'value',
                         name: 'Citation count',
                         min: 0,
-                        max: 12000,
+                        max: 20000,
                         position: 'left',
                         axisLine: {
                             lineStyle: {
@@ -118,8 +121,10 @@
                         type: 'value',
                         name: 'Citation lag',
                         min: 0,
-                        max: 15,
+                        max: 30,
                         position: 'right',
+                        inverse: true,
+                        nameLocation: 'start',
                         axisLine: {
                             lineStyle: {
                                 color: colors[1]
@@ -137,13 +142,17 @@
                 series: [{
                     name: 'Citation count',
                     type: 'bar',
+                    xAxisIndex: 0,
                     yAxisIndex: 0,
-                    data: totalCitations
+                    data: totalCitations,
+                    barWidth: '50px'
                 }, {
                     name: 'Citation lag',
-                    type: 'line',
+                    type: 'bar',
+                    xAxisIndex: 1,
                     yAxisIndex: 1,
-                    data: citationLags
+                    data: citationLags,
+                    barWidth: '50px'
                 }]
             })
 

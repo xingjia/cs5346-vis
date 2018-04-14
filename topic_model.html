@@ -6,8 +6,10 @@
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 </head>
 
-<body>
-    <div id="selection"></div>
+<body >
+    <div id="selection">
+        <div>Choose a topic:</div>
+    </div>
     <div id="main" style="width: 1000px; height:400px;"></div>
 
     <script type="text/javascript">
@@ -53,17 +55,29 @@
                 keywords.push(keyword)
 
                 for (var yearIdx in data[keyword]) {
-                    calcData.push([parseInt(yearIdx), kIdx, data[keyword][yearIdx] * 1000]);
+                    calcData.push([parseInt(yearIdx), kIdx, data[keyword][yearIdx]]);
                 }
             }
-
-            console.log(calcData)
-
 
             myChart.setOption({
                 title: {
                     left: 'center',
                     text: 'Keyword Popularity in Topic'
+                },
+                legend: {
+                    data: ['Popularity'],
+                    left: 'right'
+                },
+                grid: {
+                    x: 200
+                },
+                tooltip: {
+                    formatter: function(params, callback) {
+                        console.log(params)
+                        return "Keyword: " + keywords[params.data[0]] + "<br>" +
+                                "Year: " + years[params.data[1]] + "<br>" + 
+                                "Value: " + params.data[2];
+                    }
                 },
                 xAxis: {
                     type: 'category',
@@ -85,13 +99,16 @@
                     data: keywords,
                     axisLine: {
                         show: false
+                    },
+                    axisLabel: {
+                        margin: 20
                     }
                 },
                 series: [{
                     name: 'Popularity',
                     type: 'scatter',
                     symbolSize: function (val) {
-                        return val[2] * 2;
+                        return val[2] * 2000;
                     },
                     data: calcData
                 }]
