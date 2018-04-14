@@ -4,15 +4,17 @@
     <meta charset="utf-8">
     <script src="echarts.js"></script>
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <link rel="stylesheet" href="main.css">
+    <script src="dark.js"></script>
 </head>
 
 <body>
-    <div id="main" style="width: 1000px;height:600px;"></div>
+    <div id="main" class="container"></div>
 
     <script type="text/javascript">
-        var myChart = echarts.init(document.getElementById('main'));
+        var myChart = echarts.init(document.getElementById('main'),'dark');
 
-        $.get('file_count.json').done(function(data) {
+        $.get('json/file_count.json').done(function(data) {
 
             myChart.setOption({
                 title: {

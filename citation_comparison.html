@@ -4,13 +4,15 @@
     <meta charset="utf-8">
     <script src="echarts.js"></script>
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <link rel="stylesheet" href="main.css">
+    <script src="dark.js"></script>
 </head>
 
 <body>
-    <div id="main" style="width: 600px;height:600px;"></div>
+    <div id="main" class="container"></div>
 
     <script type="text/javascript">
-        var myChart = echarts.init(document.getElementById('main'));
+        var myChart = echarts.init(document.getElementById('main'),'dark');
 
         var yearBinStarts = [0, 1970, 1990, 2000, 2005];
         var yearBinEnds = [1969, 1989, 1999, 2004];
@@ -37,7 +39,7 @@
             return idx
         }
 
-        $.get('citation_count_09.json').done(function(data) {
+        $.get('json/citation_count_09.json').done(function(data) {
 
             var confNames = []
             var totalCitations = []

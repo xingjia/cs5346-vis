@@ -4,16 +4,18 @@
     <meta charset="utf-8">
     <script src="echarts.js"></script>
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <link rel="stylesheet" href="main.css">
+    <script src="dark.js"></script>
 </head>
 
 <body>
-    <div id="selection">
-        <div>Choose a topic:</div>
-    </div>
-    <div id="main" style="width: 800px;height:400px;"></div>
+        <div id="selection" style="display:flex">
+                <div class="title">Choose a topic:</div>
+            </div>
+    <div id="main" class="container"></div>
 
     <script type="text/javascript">
-        var myChart = echarts.init(document.getElementById('main'));
+        var myChart = echarts.init(document.getElementById('main'),'dark');
 
         var colors = ["balck", "#ffcce1", "#6ab4ed", "#f484ab", "#ff9b7a", "#97f287"]
 
@@ -23,9 +25,9 @@
             years.push(1990 + x)
         }
 
-        $.get('topicModel.json').done(function(topicModelData) {
+        $.get('json/topicModel.json').done(function(topicModelData) {
             
-            $.get('topicModelRank.json').done(function(data) {
+            $.get('json/topicModelRank.json').done(function(data) {
 
             var topicNames = []
 
@@ -73,7 +75,7 @@
                         show: true,
                         position: "right",
                         fontSize: 15,
-                        offset: [10, 0],
+                        offset: [50, 0],
                         formatter: function(params) {
                             return params.dataIndex == years.length - 1 ? series[params.seriesIndex].name : "";
                         }
@@ -86,6 +88,7 @@
 
             myChart.setOption({
                 title: {
+                    top:20,
                     left: 'center',
                     text: 'Keyword Rank in Topic ' + topic 
                 },
@@ -98,7 +101,7 @@
                     selectedMode: "single"
                 },
                 grid: {
-                    y: "25%",
+                    y: "15%",
                     x2: "20%"
                 },
                 tooltip: {
