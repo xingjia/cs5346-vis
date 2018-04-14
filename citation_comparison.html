@@ -15,7 +15,7 @@
         var yearBinStarts = [0, 1970, 1990, 2000, 2005];
         var yearBinEnds = [1969, 1989, 1999, 2004];
 
-        var colors = ['#5793f3', '#d14a61', '#675bba'];
+        var colors = ['#d14a61', '#5793f3', '#675bba'];
 
         function initBins(outer, inner) {
             var bins = [];
@@ -70,7 +70,8 @@
                 },
                 legend: {
                     data:['Citation count', 'Citation lag'],
-                    bottom: '0',
+                    left: 'right',
+                    top: '25',
                     orient: 'horizontal'
                 },
                 tooltip: {
@@ -82,6 +83,16 @@
                                "Citation Lag: " + citationLags[params[0].dataIndex].toFixed(2) + "years"
                      }
                 },
+                grid:[{
+                    left: 100,
+                    right: 50,
+                    height: '35%'
+                },{
+                    left: 100,
+                    right: 50,
+                    height: '35%',
+                    top: '53%'
+                }],
                 // visualMap: [{
                 //     show: false,
                 //     type: 'continuous',
@@ -93,17 +104,20 @@
                 //     }
                 // }],
                 xAxis: [{
-                    data: confNames
+                    data: confNames,
+                    gridIndex: 0
                 },{
                     data: confNames,
-                    position: 'top'
+                    position: 'top',
+                    gridIndex: 1
                 }],
                 yAxis: [
                     {
                         type: 'value',
+                        gridIndex: 0,
                         name: 'Citation count',
                         min: 0,
-                        max: 20000,
+                        max: 12000,
                         position: 'left',
                         axisLine: {
                             lineStyle: {
@@ -119,10 +133,10 @@
                     },
                     {
                         type: 'value',
+                        gridIndex: 1,
                         name: 'Citation lag',
                         min: 0,
-                        max: 30,
-                        position: 'right',
+                        max: 12,
                         inverse: true,
                         nameLocation: 'start',
                         axisLine: {
@@ -145,14 +159,14 @@
                     xAxisIndex: 0,
                     yAxisIndex: 0,
                     data: totalCitations,
-                    barWidth: '50px'
+                    barWidth: '40px'
                 }, {
                     name: 'Citation lag',
                     type: 'bar',
                     xAxisIndex: 1,
                     yAxisIndex: 1,
                     data: citationLags,
-                    barWidth: '50px'
+                    barWidth: '40px'
                 }]
             })
 
