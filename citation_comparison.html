@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="echarts.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+</head>
+
+<body>
+    <div id="main" style="width: 600px;height:400px;"></div>
+
+    <script type="text/javascript">
+        var myChart = echarts.init(document.getElementById('main'));
+
+        var yearBinStarts = [0, 1970, 1990, 2000, 2005];
+        var yearBinEnds = [1969, 1989, 1999, 2004];
+
+        var colors = ['#5793f3', '#d14a61', '#675bba'];
+
+        function initBins(outer, inner) {
+            var bins = [];
+            for (var i = 0; i < outer; i ++) {
+                var innerArray = [];
+                for (var j = 0; j < inner; j ++) innerArray.push(0)
+                bins.push(innerArray);
+            }
+            return bins;
+        }
+
+        function getBinIndex(x) {
+
+            for (var idx in yearBinStarts) {
+                if ( x >= yearBinStarts[idx] && x <= yearBinEnds[idx]) {
+                    return idx
+                }
+            }
+            return idx
+        }
+
+        $.get('citation_count_09.json').done(function(data) {
+
+            var confNames = []
+            var totalCitations = []
+            var citationLags = []
+
+            var series = []
+
+            var bins = initBins(data.length, 5) // number of confs, number of confs
+
+            for (var confIdx in data) {
+                confNames.push(data[confIdx].name)
+                totalCitations.push(data[confIdx].total)
+                var citationLag = 0;
+
+                for (var year in data[confIdx].citation_date) {
+                    bins[confIdx][getBinIndex(year)]+= data[confIdx].citation_date[year]
+                }
+
+                for (var year in data[confIdx].citation_date) {
+                    citationLag += (2009 - year) * data[confIdx].citation_date[year]
+                }
+
+                citationLags.push( citationLag/data[confIdx].total )
+            }
+
+            myChart.setOption({
+                title: {
+                    left: 'center',
+                    text: 'Citation count and lag for conferences at 2009'
+                },
+                legend: {
+                    data:['Citation count', 'Citation lag'],
+                    bottom: '0',
+                    orient: 'horizontal'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: function(params, callback) {
+                        console.log(params)
+                        return "Conference: " + confNames[params[0].dataIndex] + "<br>" +
+                               "Citation number: " + totalCitations[params[0].dataIndex] + "<br>" +
+                               "Citation Lag: " + citationLags[params[0].dataIndex].toFixed(2) + "years"
+                     }
+                },
+                visualMap: [{
+                    show: false,
+                    type: 'continuous',
+                    seriesIndex: 1,
+                    min: 5,
+                    max: 12,
+                    inRange: {
+                        color: ['yellow', 'crimson']
+                    }
+                }],
+                xAxis: {
+                    data: confNames
+                },
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: 'Citation count',
+                        min: 0,
+                        max: 12000,
+                        position: 'left',
+                        axisLine: {
+                            lineStyle: {
+                                color: colors[0]
+                            }
+                        },
+                        axisLabel: {
+                            formatter: '{value}'
+                        },
+                        splitLine: {
+                            show: false
+                        }
+                    },
+                    {
+                        type: 'value',
+                        name: 'Citation lag',
+                        min: 0,
+                        max: 15,
+                        position: 'right',
+                        axisLine: {
+                            lineStyle: {
+                                color: colors[1]
+                            }
+                        },
+                        axisLabel: {
+                            formatter: '{value} years'
+                        },
+                        splitLine: {
+                            show: false
+                        }
+                    },
+                ],
+                // series: series
+                series: [{
+                    name: 'Citation count',
+                    type: 'bar',
+                    yAxisIndex: 0,
+                    data: totalCitations
+                }, {
+                    name: 'Citation lag',
+                    type: 'line',
+                    yAxisIndex: 1,
+                    data: citationLags
+                }]
+            })
+
+        })
+    </script>
+</body>
+
+</html>
+

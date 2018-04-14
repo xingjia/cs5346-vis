@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="echarts.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+</head>
+
+<body>
+    <div id="selection"></div>
+    <div id="main" style="width: 1000px; height:400px;"></div>
+
+    <script type="text/javascript">
+        var myChart = echarts.init(document.getElementById('main'));
+
+        var colors = ["balck", "#ffcce1", "#6ab4ed", "#f484ab", "#ff9b7a", "#97f287"]
+
+        var years = []
+
+        for (var x = 0; x < 10; x++) {
+            years.push(1990 + x)
+        }
+
+
+        $.get('topicModel.json').done(function(data) {
+
+            var topicNames = []
+
+            for (var topic in data) {
+                topicNames.push(topic)
+
+            }
+
+            topicNames.map(function(topic) {
+                var topicButton = $("<button></button>");
+                topicButton.text(topic);
+                topicButton.css({
+                    "margin": "5px", 
+                    "padding": "5px", 
+                    "background": "white",
+                    "border": "1px solid grey"
+                    });
+                topicButton.on("click", showChart.bind(this, data[topic]))
+                $("#selection").append(topicButton);
+            });
+        });
+
+        function showChart(data) {
+            var keywords = []
+            var calcData = []
+            for (var keyword in data) {
+                var kIdx = keywords.length;
+                keywords.push(keyword)
+
+                for (var yearIdx in data[keyword]) {
+                    calcData.push([parseInt(yearIdx), kIdx, data[keyword][yearIdx] * 1000]);
+                }
+            }
+
+            console.log(calcData)
+
+
+            myChart.setOption({
+                title: {
+                    left: 'center',
+                    text: 'Keyword Popularity in Topic'
+                },
+                xAxis: {
+                    type: 'category',
+                    data: years,
+                    boundaryGap: false,
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: '#999',
+                            type: 'dashed'
+                        }
+                    },
+                    axisLine: {
+                        show: false
+                    }
+                },
+                yAxis: {
+                    type: 'category',
+                    data: keywords,
+                    axisLine: {
+                        show: false
+                    }
+                },
+                series: [{
+                    name: 'Popularity',
+                    type: 'scatter',
+                    symbolSize: function (val) {
+                        return val[2] * 2;
+                    },
+                    data: calcData
+                }]
+            })
+        }
+            
+
+
+
+       
+    </script>
+</body>
+
+</html>
+

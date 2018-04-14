@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="echarts.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+</head>
+
+<body>
+    <div id="main" style="width: 800px;height:400px;"></div>
+
+    <script type="text/javascript">
+        var myChart = echarts.init(document.getElementById('main'));
+
+        var colors = ["balck", "#ffcce1", "#6ab4ed", "#f484ab", "#ff9b7a", "#97f287"]
+
+        var years = []
+
+        for (var x = 0; x < 10; x++) {
+            years.push(1990 + x)
+        }
+
+
+        $.get('topicModelRank.json').done(function(data) {
+
+            var topicNames = []
+            var keywords = []
+
+            var series = []
+            for (var topic in data) {
+                topicNames.push(topic)
+                var keywordCount = 1;
+                for (var keyword in data[topic]) {
+                    series.push({
+                        name: topic,
+                        keyword: keyword,
+                        type: "line",
+                        symbol: "circle",
+                        symbolSize: 15,
+                        lineStyle: {
+                            width: 3,
+                            color: colors[keywordCount]
+                        },
+                        itemStyle: {
+                            color: colors[keywordCount]
+                        },
+                        label: {
+                            show: true,
+                            position: "right",
+                            fontSize: 15,
+                            offset: [10, 0],
+                            formatter: function(params) {
+                                return params.dataIndex == years.length - 1 ? series[params.seriesIndex].keyword : "";
+                            }
+                        },
+                        data: data[topic][keyword]
+                    });
+
+                    keywordCount ++;
+                }
+            }
+            
+
+            myChart.setOption({
+                title: {
+                    left: 'center',
+                    text: 'Keyword Rank in Topic'
+                },
+                legend: {
+                    data: topicNames,
+                    orient: "horizontal",
+                    right: "center",
+                    top: "10%",
+                    inactiveColor: "grey",
+                    selectedMode: "single"
+                },
+                grid: {
+                    y: "25%",
+                    x2: "20%"
+                },
+                tooltip: {
+                    formatter: function(params, callback) {
+                        console.log(params)
+                        return "Keyword: " + params.seriesName + "<br>" +
+                                "Year: " + params.name + "<br>" + 
+                                "Rank: " + (parseInt(params.data) + 1)
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    data: years
+                },
+                yAxis: {
+                    type: 'value',
+                    inverse: true
+                },
+                // series: series
+                series: series
+            })
+
+        })
+    </script>
+</body>
+
+</html>
+
