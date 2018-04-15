@@ -10,13 +10,15 @@
 
 <body>
     <div id="main" class="container"></div>
+    <div class="home"><a href="/">Home</a></div>
+    <div class="prev"><a href="/topic_model.html">Topic Model Analysis</a></div>
 
     <script type="text/javascript">
         var myChart = echarts.init(document.getElementById('main'),'dark');
 
         var colors = ["balck", "#ffcce1", "#6ab4ed", "#f484ab", "#ff9b7a", "#97f287"]
 
-        var years = []
+        var years = [];
 
         for (var x = 0; x < 10; x++) {
             years.push(1990 + x)
@@ -30,7 +32,7 @@
 
                 var series = []
                 for (var topic in data) {
-                    topicNames.push(topic)
+                    topicNames.push(topic);
                     var keywordCount = 1;
                     for (var keyword in data[topic]) {
                         series.push({
@@ -39,8 +41,8 @@
                             type: "line",
                             symbol: "circle",
                             symbolSize: function(val, params) {
-                                var popularity = topicModelData[params.seriesName][series[params.seriesIndex].keyword][params.dataIndex];
-                                return [ popularity * 3000, popularity * 3000];
+                                var impt = topicModelData[params.seriesName][series[params.seriesIndex].keyword][params.dataIndex];
+                                return [ impt * 3000, impt * 3000];
                             },
                             lineStyle: {
                                 width: 3,
@@ -53,7 +55,7 @@
                                 show: true,
                                 position: "right",
                                 fontSize: 15,
-                                offset: [50, 0],
+                                offset: [20, 0],
                                 formatter: function(params) {
                                     return params.dataIndex == years.length - 1 ? series[params.seriesIndex].keyword : "";
                                 }
@@ -68,7 +70,7 @@
                 myChart.setOption({
                     title: {
                         left: 'center',
-                        text: 'Keyword Rank in Topic',
+                        text: 'Keyword Importance Rank in Topics',
                         top:20
                     },
                     legend: {
@@ -90,8 +92,8 @@
                         formatter: function(params, callback) {
                             return "Keyword: " + series[params.seriesIndex].keyword + "<br>" +
                                     "Year: " + params.name + "<br>" + 
-                                    "Rank: " + (parseInt(params.data) + 1) + "<br>" +
-                                    "Popularity: " + topicModelData[params.seriesName][series[params.seriesIndex].keyword][params.dataIndex];
+                                    "Rank: " + (parseInt(params.data)) + "<br>" +
+                                    "Importance: " + topicModelData[params.seriesName][series[params.seriesIndex].keyword][params.dataIndex];
                         }
                     },
                     xAxis: {

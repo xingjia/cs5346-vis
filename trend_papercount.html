@@ -10,7 +10,14 @@
 </head>
 
 <body>
-    <div id="main" class="container"></div>
+    <div id="selectionDiv">
+            Choose a conference: &nbsp;
+    </div>
+    <div id="main" class="container wide"></div>
+    <div class="home"><a href="/">Home</a></div>    
+    <div class="next">
+        <a href="/citation_comparison.html">Out-citation number and lag comparison over conferences</a>
+    </div>
 
     <script type="text/javascript">
         var myChart = echarts.init(document.getElementById('main'),'dark');
@@ -23,12 +30,34 @@
             }
         } 
 
-        $.get('json/file_count.json').done(function(data) {
 
+        $.get('json/paper_count.json').done(function(data) {
+
+            var confs = data.map(x => x["name"].substring(0, 1)).filter((v, i, a) => a.indexOf(v) === i).sort();
+
+            confs.forEach((conf) => {
+
+                var confData = data.filter(x => x["name"].substring(0, 1) == conf);
+                var topicButton = $("<button></button>");
+                topicButton.text(conf);
+                topicButton.addClass('selection')
+                topicButton.on("click", (e) => {
+                    $("button").removeClass('selected');
+                    $(e.target).addClass('selected');
+                    updateChart(confData, conf);
+                })
+                $("#selectionDiv").append(topicButton);
+            });
+
+            $("#selectionDiv > button").first().trigger("click");
+        });
+
+        function updateChart(data, conf) {
+            console.log(data, conf)
             myChart.setOption({
                 title: {
                     left: 'center',
-                    text: 'Number of papers at conference W over time'
+                    text: 'Number of papers at conference ' + conf + ' over conference serie'
                 },
                 legend: {
                     data:['Paper count'],
@@ -61,7 +90,7 @@
                 yAxis: [
                     {
                         type: 'value',
-                        name: 'Citation count',
+                        name: 'Paper count',
                         // min: 0,
                         // max: 2000,
                         position: 'left'
@@ -79,8 +108,11 @@
                     barWidth: '40px'
                 }]
             })
+        }
 
-        })
+
+
+        
     </script>
 </body>
 

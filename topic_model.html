@@ -13,6 +13,9 @@
         Choose a topic: &nbsp;
     </div>
     <div id="main" class="container"></div>
+    <div class="prev"><a href="/top_citation_over_years_by_conf.html">Top cited paper over years by conference</a></div>
+    <div class="home"><a href="/">Home</a></div>
+    <div class="next"><a href="/topic_model_rank.html">Topic Model Rank</a></div>
 
     <script type="text/javascript">
         var myChart = echarts.init(document.getElementById('main'),'dark');
@@ -46,7 +49,6 @@
             });
 
             $("#selectionDiv > button").first().trigger("click");
-            console.log( $("#selectionDiv > button").first() );
         });
 
         function showChart(data, topic) {
@@ -64,10 +66,10 @@
             myChart.setOption({
                 title: {
                     left: 'center',
-                    text: 'Keyword Popularity in ' + topic
+                    text: 'Keyword Importance in ' + topic
                 },
                 legend: {
-                    data: ['Popularity'],
+                    data: ['Importance'],
                     left: 'right'
                 },
                 grid: {
@@ -78,7 +80,7 @@
                         console.log(params)
                         return "Keyword: " + keywords[params.data[1]] + "<br>" +
                                 "Year: " + years[params.data[0]] + "<br>" + 
-                                "Value: " + params.data[2];
+                                "Importance: " + params.data[2];
                     }
                 },
                 xAxis: {
@@ -107,7 +109,7 @@
                     }
                 },
                 series: [{
-                    name: 'Popularity',
+                    name: 'Importance',
                     type: 'scatter',
                     symbolSize: function (val) {
                         return val[2] * 3000;
