@@ -46,7 +46,7 @@
                 // console.log(top2);
                 // console.log(top3);
                 var tops = [top1, top2, top3];
-                var colors = ["#1d95ba", "#50C8ED", "#83FBFF"];
+                var colors = ["#1d95ba", "#37AFD4", "#50C8ED"];
                 for (var k = 0; k < 3; k++) {
                     var temp_series = {
                         name: conf,
@@ -56,8 +56,23 @@
                             backgroundColor: "black",
                             formatter: function (data) {
                                 var detail = getPaperTitle(data);
+                                var year = detail[1].split(",").pop();
+                                var authors = detail[1].replace(year, "")
                                 return "Title: " + detail[0] +
-                                    "<br>Marker: " + detail[1]
+                                    "<br>Author(s): " + authors +
+                                    "<br>Year: " + year
+                            }
+                        },
+                        label: {
+                            show: true,
+                            position: "insideRight",
+                            formatter: function (data) {
+                                var topNo = data['seriesIndex'] % 3 + 1;
+                                if (data['data'] == 0) {
+                                    return ""
+                                } else {
+                                    return "Citied " + data['data'] + " times"
+                                }
                             }
                         },
                         itemStyle: {
@@ -70,7 +85,7 @@
             // console.log(series_data);
             option = {
                 title: {
-                    text: 'Top 3 Papers In Past Ten Years By Conferences',
+                    text: 'Top 3 Papers Per Year and Conferences Since 2008',
                     left: 'center',
                     top: 20,
                     subtext: "(based on number of cited times)",
