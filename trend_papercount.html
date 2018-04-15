@@ -4,15 +4,26 @@
     <meta charset="utf-8">
     <script src="echarts.js"></script>
     <script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <link rel="stylesheet" href="main.css">
+    <script src="dark.js"></script>
+
 </head>
 
 <body>
-    <div id="main" style="width: 1000px;height:600px;"></div>
+    <div id="main" class="container"></div>
 
     <script type="text/javascript">
-        var myChart = echarts.init(document.getElementById('main'));
+        var myChart = echarts.init(document.getElementById('main'),'dark');
 
-        $.get('file_count.json').done(function(data) {
+        function getFullYear(x) {
+            if (x.startsWith("0") || x.startsWith("1")){
+                return parseInt("20" + x);
+            } else {
+                return parseInt("19" + x);
+            }
+        } 
+
+        $.get('json/file_count.json').done(function(data) {
 
             myChart.setOption({
                 title: {
@@ -28,14 +39,17 @@
                 tooltip: {
                     trigger: 'axis',
                     formatter: function(params, callback) {
-                        console.log(params[0])
                         return "Conference: " + params[0].axisValue + "<br>" + 
                                "Number of papers: " + params[0].data
                      }
                 },
                 xAxis: [{
                     name: "Conference",
-                    data: data.map(x => x["name"]),
+                    data: data.sort(function(x1, x2) {
+                        var x1 = getFullYear(x1["name"].substring(1));
+                        var x2 = getFullYear(x2["name"].substring(1));
+                        return x1 > x2 ? 1 : -1;
+                    }).map(x => x["name"]),
                     type: "category",
                     axisTick: {
                         interval: 0
@@ -57,7 +71,11 @@
                 series: [{
                     name: 'Paper count',
                     type: 'line',
-                    data: data.map(x => x["count"]),
+                    data: data.sort(function(x1, x2) {
+                        var x1 = getFullYear(x1["name"].substring(1));
+                        var x2 = getFullYear(x2["name"].substring(1));
+                        return x1 > x2 ? 1: -1;
+                    }).map(x => x["count"]),
                     barWidth: '40px'
                 }]
             })

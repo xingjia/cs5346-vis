@@ -1,0 +1,7 @@
+data
+raw_data
+.vscode
+unzip.sh
+.DS_Store
+data_process
+clean_data

@@ -4,16 +4,18 @@
     <meta charset="utf-8">
     <script src="echarts.js"></script>
     <script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <link rel="stylesheet" href="main.css">
+    <script src="dark.js"></script>
 </head>
 
-<body >
-    <div id="selection">
-        <div>Choose a topic:</div>
+<body>
+    <div id="selectionDiv">
+        Choose a topic: &nbsp;
     </div>
-    <div id="main" style="width: 1000px; height:400px;"></div>
+    <div id="main" class="container"></div>
 
     <script type="text/javascript">
-        var myChart = echarts.init(document.getElementById('main'));
+        var myChart = echarts.init(document.getElementById('main'),'dark');
 
         var colors = ["balck", "#ffcce1", "#6ab4ed", "#f484ab", "#ff9b7a", "#97f287"]
 
@@ -24,30 +26,30 @@
         }
 
 
-        $.get('topicModel.json').done(function(data) {
-
+        $.get('json/topicModel.json').done(function(data) {
             var topicNames = []
 
             for (var topic in data) {
-                topicNames.push(topic)
-
+                topicNames.push(topic);
             }
 
             topicNames.map(function(topic) {
                 var topicButton = $("<button></button>");
                 topicButton.text(topic);
-                topicButton.css({
-                    "margin": "5px", 
-                    "padding": "5px", 
-                    "background": "white",
-                    "border": "1px solid grey"
-                    });
-                topicButton.on("click", showChart.bind(this, data[topic]))
-                $("#selection").append(topicButton);
+                topicButton.addClass('selection')
+                topicButton.on("click", (e) => {
+                    $("button").removeClass('selected');
+                    $(e.target).addClass('selected');
+                    showChart(data[topic], topic);
+                })
+                $("#selectionDiv").append(topicButton);
             });
+
+            $("#selectionDiv > button").first().trigger("click");
+            console.log( $("#selectionDiv > button").first() );
         });
 
-        function showChart(data) {
+        function showChart(data, topic) {
             var keywords = []
             var calcData = []
             for (var keyword in data) {
@@ -62,7 +64,7 @@
             myChart.setOption({
                 title: {
                     left: 'center',
-                    text: 'Keyword Popularity in Topic'
+                    text: 'Keyword Popularity in ' + topic
                 },
                 legend: {
                     data: ['Popularity'],
@@ -74,8 +76,8 @@
                 tooltip: {
                     formatter: function(params, callback) {
                         console.log(params)
-                        return "Keyword: " + keywords[params.data[0]] + "<br>" +
-                                "Year: " + years[params.data[1]] + "<br>" + 
+                        return "Keyword: " + keywords[params.data[1]] + "<br>" +
+                                "Year: " + years[params.data[0]] + "<br>" + 
                                 "Value: " + params.data[2];
                     }
                 },
@@ -114,10 +116,6 @@
                 }]
             })
         }
-            
-
-
-
        
     </script>
 </body>

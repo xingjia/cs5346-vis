@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <script src="echarts.js"></script>
+    <script src="dark.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+    <div id="main" class="container"></div>
+
+    <script type="text/javascript">
+        var raw_data;
+        var year_data = ['2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015'];
+        var legend_data = ['D', 'E', 'J', 'K', 'N', 'P', 'Q', 'S', 'W'];
+        $.get('json/top3_citation_new.json').done(function (data) {
+            raw_data = data;
+            draw_chart(data);
+        });
+
+        function draw_chart(data) {
+            var myChart = echarts.init(document.getElementById('main'), 'dark');
+            var series_data = [];
+            for (var i = 0; i < legend_data.length; i++) {
+                var conf = legend_data[i]
+                var total_data = data[conf];
+                // console.log(total_data);
+                var top1 = [];
+                var top2 = [];
+                var top3 = [];
+                for (var j = 0; j < year_data.length; j++) {
+                    if (total_data[year_data[j]]) {
+                        top1.push(total_data[year_data[j]][2][1])
+                        top2.push(total_data[year_data[j]][1][1])
+                        top3.push(total_data[year_data[j]][0][1])
+                    } else {
+                        top1.push(0)
+                        top2.push(0)
+                        top3.push(0)
+                    }
+                };
+                // console.log(top1);
+                // console.log(top2);
+                // console.log(top3);
+                var tops = [top1, top2, top3];
+                var colors = ["#1d95ba", "#50C8ED", "#83FBFF"];
+                for (var k = 0; k < 3; k++) {
+                    var temp_series = {
+                        name: conf,
+                        type: 'bar',
+                        data: tops[k],
+                        tooltip: {
+                            backgroundColor: "black",
+                            formatter: function (data) {
+                                var detail = getPaperTitle(data);
+                                return "Title: " + detail[0] +
+                                    "<br>Marker: " + detail[1]
+                            }
+                        },
+                        itemStyle: {
+                            color: colors[k]
+                        },
+                    };
+                    series_data.push(temp_series);
+                }
+            }
+            // console.log(series_data);
+            option = {
+                title: {
+                    text: 'Top 3 Papers In Past Ten Years By Conferences',
+                    left: 'center',
+                    top: 20,
+                    subtext: "(based on number of cited times)",
+                },
+                tooltip: {
+                    trigger: 'item',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                legend: {
+                    type: 'scroll',
+                    orient: 'vertical',
+                    right: 10,
+                    top: 120,
+                    bottom: 20,
+                    itemWidth: 0,
+                    selectedMode: "single",
+                    data: legend_data,
+                    textStyle: {
+                        fontWeight: "bold",
+                        fontSize: 16,
+                        color: "#1d95ba",
+                    },
+                },
+                grid: {
+                    top: "15%",
+                    left: '3%',
+                    right: '10%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                yAxis: [
+                    {
+                        type: 'category',
+                        data: year_data
+                    }
+                ],
+                xAxis: [
+                    {
+                        type: 'value',
+                        name: 'Cited Times'
+                    }
+                ],
+                series: series_data
+            }
+            myChart.setOption(option);
+            myChart.on('click', barClicked);
+        };
+
+        function getPaperTitle(data) {
+            var conf = data['seriesName'];
+            var year = year_data[data['dataIndex']];
+            var top = data['seriesIndex'] - legend_data.indexOf(conf) * 3;
+            var paperDetail = raw_data[conf][year][2 - top];
+            var title = paperDetail[0].split("&&")[0];
+            var marker = paperDetail[0].split("&&")[1];
+            // console.log(paperDetail);
+            return [title, marker];
+        };
+        function barClicked(data) {
+            var detail = getPaperTitle(data);
+            var search = detail[0] + " " + detail[1];
+            search = search.replace(" ", "+");
+            search = "https://www.google.com.sg/search?q=" + search;
+            var win = window.open(search, '_blank');
+            if (win) {
+                //Browser has allowed it to be opened
+                win.focus();
+            } else {
+                //Browser has blocked it
+                alert('Please allow popups for this website');
+            }
+        }
+    </script>
+</body>
+
+</html>

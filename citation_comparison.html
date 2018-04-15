@@ -4,57 +4,39 @@
     <meta charset="utf-8">
     <script src="echarts.js"></script>
     <script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <link rel="stylesheet" href="main.css">
+    <script src="dark.js"></script>
 </head>
 
 <body>
-    <div id="main" style="width: 600px;height:600px;"></div>
+    <div id="selectionDiv">
+        <label>Select year to compare:</label>
+        <select id="selection"></select>
+    </div>
+    <div id="main" class="container"></div>
 
     <script type="text/javascript">
-        var myChart = echarts.init(document.getElementById('main'));
+        var myChart = echarts.init(document.getElementById('main'),'dark');
 
-        var yearBinStarts = [0, 1970, 1990, 2000, 2005];
-        var yearBinEnds = [1969, 1989, 1999, 2004];
-
-        var colors = ['#d14a61', '#5793f3', '#675bba'];
-
-        function initBins(outer, inner) {
-            var bins = [];
-            for (var i = 0; i < outer; i ++) {
-                var innerArray = [];
-                for (var j = 0; j < inner; j ++) innerArray.push(0)
-                bins.push(innerArray);
+        function getFullYear(x) {
+            if (x.startsWith("0") || x.startsWith("1")){
+                return parseInt("20" + x);
+            } else {
+                return parseInt("19" + x);
             }
-            return bins;
-        }
+        } 
 
-        function getBinIndex(x) {
-
-            for (var idx in yearBinStarts) {
-                if ( x >= yearBinStarts[idx] && x <= yearBinEnds[idx]) {
-                    return idx
-                }
-            }
-            return idx
-        }
-
-        $.get('citation_count_09.json').done(function(data) {
-
+        function updateChart(data, yearTitle) {
             var confNames = []
             var totalCitations = []
             var citationLags = []
 
             var series = []
 
-            var bins = initBins(data.length, 5) // number of confs, number of confs
-
             for (var confIdx in data) {
                 confNames.push(data[confIdx].name)
                 totalCitations.push(data[confIdx].total)
                 var citationLag = 0;
-
-                for (var year in data[confIdx].citation_date) {
-                    bins[confIdx][getBinIndex(year)]+= data[confIdx].citation_date[year]
-                }
 
                 for (var year in data[confIdx].citation_date) {
                     citationLag += (2009 - year) * data[confIdx].citation_date[year]
@@ -66,7 +48,7 @@
             myChart.setOption({
                 title: {
                     left: 'center',
-                    text: 'Citation count and lag for conferences at 2009'
+                    text: 'Citation count and lag for conferences at ' + yearTitle 
                 },
                 legend: {
                     data:['Citation count', 'Citation lag'],
@@ -77,7 +59,6 @@
                 tooltip: {
                     trigger: 'axis',
                     formatter: function(params, callback) {
-                        console.log(params)
                         return "Conference: " + confNames[params[0].dataIndex] + "<br>" +
                                "Citation number: " + totalCitations[params[0].dataIndex] + "<br>" +
                                "Citation Lag: " + citationLags[params[0].dataIndex].toFixed(2) + "years"
@@ -93,16 +74,6 @@
                     height: '35%',
                     top: '53%'
                 }],
-                // visualMap: [{
-                //     show: false,
-                //     type: 'continuous',
-                //     seriesIndex: 1,
-                //     min: 5,
-                //     max: 12,
-                //     inRange: {
-                //         color: ['yellow', 'crimson']
-                //     }
-                // }],
                 xAxis: [{
                     data: confNames,
                     gridIndex: 0
@@ -117,13 +88,8 @@
                         gridIndex: 0,
                         name: 'Citation count',
                         min: 0,
-                        max: 12000,
+                        // max: 12000,
                         position: 'left',
-                        axisLine: {
-                            lineStyle: {
-                                color: colors[0]
-                            }
-                        },
                         axisLabel: {
                             formatter: '{value}'
                         },
@@ -136,14 +102,9 @@
                         gridIndex: 1,
                         name: 'Citation lag',
                         min: 0,
-                        max: 12,
+                        // max: 12,
                         inverse: true,
                         nameLocation: 'start',
-                        axisLine: {
-                            lineStyle: {
-                                color: colors[1]
-                            }
-                        },
                         axisLabel: {
                             formatter: '{value} years'
                         },
@@ -152,7 +113,6 @@
                         }
                     },
                 ],
-                // series: series
                 series: [{
                     name: 'Citation count',
                     type: 'bar',
@@ -169,6 +129,28 @@
                     barWidth: '40px'
                 }]
             })
+ 
+        }
+
+        $.get('json/citation_count.json').done(function(data) {
+
+            var years = data.map(x => getFullYear(x["name"].substring(1))).filter((v, i, a) => a.indexOf(v) === i).sort();
+
+            years.forEach((year) => {
+                var option = $("<option></option>");
+                option.val(year);
+                option.text(year);
+                $("#selection").append(option);
+            })
+
+            $("#selection").change((e) => {
+                var year = $(e.target).val();
+                var yearData = data.filter(x => getFullYear(x["name"].substring(1)) == year);
+                updateChart(yearData, year);
+            })
+
+            $("#selection").val(2009);
+            $("#selection").trigger("change");
 
         })
     </script>

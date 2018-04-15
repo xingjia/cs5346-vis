@@ -1,0 +1,42 @@
+div.container{
+    width: 1000px;
+    height: 700px;
+    margin: auto;
+}
+
+body{
+    background-color: #333333;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+    text-align: center;
+}
+
+div.title{
+    font-family: Arial, Helvetica, sans-serif;
+    padding-top: 10px;
+    color:white
+}
+
+#selectionDiv {
+    margin: 5vh 10vh;
+    text-align: center;
+}
+
+button.selection {
+    margin: 5px;
+    padding: 5px 10px 5px 10px;
+    color: white;
+    background: black;
+    border-radius: 5px;
+    border: 1px solid white;
+    outline: none;
+}
+
+button.selected {
+    border: 1px solid crimson;
+    color: red;
+}
+
+button:hover {
+    background: darkslategrey;
+}
