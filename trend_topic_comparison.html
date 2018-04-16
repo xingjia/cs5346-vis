@@ -21,7 +21,6 @@
     </div>
 
     <script type="text/javascript">
-        var myChart = echarts.init(document.getElementById('main'),'dark');
 
         function getFullYear(x) {
             if (x.startsWith("0") || x.startsWith("1")){
@@ -72,10 +71,11 @@
                 }
                 var labelArr = Array.from(labelSet);
  
-                var topicButton = $("<button></button>");
+                var topicButton = $("<button id='" + conf + "'></button>");
                 topicButton.text(conf);
                 topicButton.addClass('selection')
                 topicButton.on("click", (e) => {
+                    echarts.dispose(document.getElementById('main'),'dark');
                     $("button").removeClass('selected');
                     $(e.target).addClass('selected');
                     var counts = [];
@@ -98,9 +98,9 @@
 
         function updateChart(data, labelArr, counts, conf) {
             // console.log(data, conf, labelArr, counts);
-
+            var myChart = echarts.init(document.getElementById('main'),'dark');
             var seriesList = [];
-            for (var i in labelArr) {
+            for (var i = 0; i < labelArr.length; i++) {
                 seriesList.push({
                             name: labelArr[i],
                             type: 'line',
@@ -108,7 +108,6 @@
                             barWidth: '40px'
                         });
             }
-            myChart.setOption({});
             myChart.setOption({
                 title: {
                     left: 'center',
