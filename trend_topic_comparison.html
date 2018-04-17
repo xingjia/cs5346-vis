@@ -53,7 +53,6 @@
         $.get('json/title_keyword_count.json').done(function(data) {
 
             var confs = data.map(x => x["name"].substring(0, 1)).filter((v, i, a) => a.indexOf(v) === i).sort();
-
             confs.forEach((conf) => {
                 var confData = data.filter(x => x["name"].substring(0, 1) == conf);
                 // console.log(confData);
@@ -70,6 +69,8 @@
                     }
                 }
                 var labelArr = Array.from(labelSet);
+
+
  
                 var topicButton = $("<button id='" + conf + "'></button>");
                 topicButton.text(conf);
@@ -100,13 +101,25 @@
             // console.log(data, conf, labelArr, counts);
             var myChart = echarts.init(document.getElementById('main'),'dark');
             var seriesList = [];
+            var idx = 0;
+            var filters = {
+                "A": ["natural language processing", "system", "information", "text", "machine learning"],
+                "D": ["machine learning", "natural language processing", "model", "translation", "word"],
+                "E": ["natural language processing", "machine learning", "translation", "parse", "grammar"], 
+                "J": ["natural language processing", "finite string", "newsletter", "machine learning", "book", "review", "computational"],
+                "N": ["machine learning", "natural language processing", "model", "translation", "system"],
+                "P": ["natural language processing", "parse", "machine learning", "translation", "model"],
+                "S": ["sense", "task", "semantic", "similarity", "analysis", "sentiment"],
+                "W": ["natural language processing", "machine learning", "model", "translation", "semantic"]};
             for (var i = 0; i < labelArr.length; i++) {
-                seriesList.push({
+                if (filters[conf].indexOf(labelArr[i]) >= 0) {
+                    seriesList.push({
                             name: labelArr[i],
                             type: 'line',
                             data: counts[i],
                             barWidth: '40px'
                         });
+                }
             }
             myChart.setOption({
                 title: {
@@ -114,13 +127,12 @@
                     text: 'Topic importance at conference ' + conf + ' over conference series'
                 },
                 legend: {
-                    data: labelArr,
+                    data: filters[conf],
                     // data: keywords,
-                    left: 'right',
-                    right: 'left',
+                    left: 'center',
                     align: 'auto',
                     padding: '100',
-                    top: '95%',
+                    top: '96%',
                     // orient: 'horizontal'
                 },
                 tooltip: {
