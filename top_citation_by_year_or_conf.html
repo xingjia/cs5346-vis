@@ -10,10 +10,19 @@
 </head>
 
 <body>
-    <div id="main" class="container"></div>
-    <div class="prev"><a href="/top_citation_over_years_by_conf.html">Top cited paper over years by conference</a></div>
-    <div class="home"><a href="/">Home</a></div>    
-    <div class="next"><a href="/topic_model.html">Topic Model Analsyis</a></div>
+    <div id="main" class="container" style="height:65vh"></div>
+    <div style="width: 500px;z-index: 99;margin: 0 auto;text-align: left;font-size: small;">Instructions:<br>
+        1. Top 15 papers are selected based on the total number of cited times for all years and conferences.
+        <br>2. Ranking of each paper in each conferences are calculated afterwards</div>
+    <div class="prev">
+        <a href="/top_citation_over_years_by_conf.html">Top cited paper over years by conference</a>
+    </div>
+    <div class="home">
+        <a href="/">Home</a>
+    </div>
+    <div class="next">
+        <a href="/topic_model.html">Topic Model Analsyis</a>
+    </div>
 
     <script type="text/javascript">
         // var data;
@@ -42,13 +51,16 @@
                     top: 20
                 },
                 tooltip: {
-                    show: false,
-                    position: 'top'
+                    show: true,
+                    position: 'top',
+                    formatter:function(data){
+                        return "Ranking: No."+data['data'][2]
+                    }
                 },
                 animation: false,
                 grid: {
-                    // top:10,
-                    height: '50%',
+                    top:60,
+                    height: '80%',
                     y: '10%',
                     right: "10%",
                     left: "30%"
@@ -70,22 +82,32 @@
                 visualMap: {
                     min: 0,
                     max: 20,
+                    range:[0,100],
                     calculable: true,
                     orient: 'horizontal',
                     left: 'center',
                     bottom: '28%',
+                    text:['','Top'],
+                    show: false,
                     inRange: {
                         // color: ['rgba(241,222,158, 0.3)', 'rgba(241,222,158, 1)']
-                        color: ['#83FBFF', '#1D95BA']
-                    }
+                        // color: ['#83FBFF', '#1D95BA']
+                        color: ['#1D95BA', '#83FBFF']
+                    },
+                    // textStyle:{
+                    //     color:'white'
+                    // }
                 },
                 series: [{
-                    name: 'Punch Card',
+                    name: 'Ranking',
                     type: 'heatmap',
                     data: data,
                     label: {
                         normal: {
-                            show: true
+                            show: true,
+                            formatter: function (data) {
+                                return "No." + data['data'][2]
+                            }
                         }
                     },
                     itemStyle: {
