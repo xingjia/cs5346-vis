@@ -39,6 +39,8 @@
 
             var series = []
 
+            console.log(data)
+
             for (var confIdx in data) {
                 confNames.push(data[confIdx].name)
                 totalCitations.push(data[confIdx].total)
@@ -138,7 +140,9 @@
  
         }
 
-        $.get('json/citation_count.json').done(function(data) {
+        $.get('json/paper_count.json').done(function(pdata) {
+
+            $.get('json/citation_count.json').done(function(data) {
 
             var years = data.map(x => getFullYear(x["name"].substring(1))).filter((v, i, a) => a.indexOf(v) === i).sort();
 
@@ -151,7 +155,11 @@
 
             $("#selection").change((e) => {
                 var year = $(e.target).val();
-                var yearData = data.filter(x => getFullYear(x["name"].substring(1)) == year);
+                var yearData = data.filter(x => getFullYear(x["name"].substring(1)) == year).map(x => {
+                    var pData = pdata.filter(y => y["name"] == x["name"])[0];
+                    x["paper"] = pData["count"];
+                    return x;
+                    });
                 updateChart(yearData, year);
             })
 
@@ -159,6 +167,9 @@
             $("#selection").trigger("change");
 
         })
+        })
+
+        
     </script>
 </body>
 
