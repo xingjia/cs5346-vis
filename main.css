@@ -4,6 +4,12 @@ div.container{
     margin: auto;
 }
 
+div.tall-container {
+    width: 70vw;
+    height: 90vh;
+    margin: auto;
+}
+
 .wide {
     width: 80vw !important;
 }
